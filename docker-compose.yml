@@ -1,0 +1,35 @@
+services:
+  mysql:
+    container_name: mysql
+    image: mysql:5.7
+    restart: 'unless-stopped'
+    command: '--init-file /data/initdb.sql'
+    environment:
+      MYSQL_ROOT_PASSWORD: '123'
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      timeout: 10s
+      retries: 2
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./data/logs:/logs
+      - ./data/conf.d:/etc/mysql/conf.d
+      - ./libdata:/var/lib/mysql
+      - ./initdb.sql:/data/initdb.sql
+  api:
+    container_name: api_service
+    depends_on:
+      mysql:
+        condition: service_healthy
+    build: ./
+    restart: 'unless-stopped'
+    environment:
+      DB_HOSTNAME: mysql
+      DB_USERNAME: root
+      DB_PASSWORD: 123
+      DB_NAME: task
+    ports:
+      - "8000:8000"
+volumes:
+  libdata:
