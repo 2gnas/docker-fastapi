@@ -30,7 +30,7 @@ def insert_employee(employee: DBModel):
     return {"message": "Employee insertion successful."}
 
 # Retrieve all employees
-@app.get("/employees", status_code=status.HTTP_302_FOUND)
+@app.get("/employees", status_code=status.HTTP_200_OK)
 def get_employees():
     select_query = "SELECT * FROM employees"
     cursor.execute(select_query)
